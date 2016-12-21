@@ -20,7 +20,16 @@ public class Todo implements java.io.Serializable{
 		this.isDone = isDone;
 		this.day = new Day(day,month,year);
 	}
-	
+	public Todo(Todo ref)
+	{
+		this.message = ref.message;
+		this.isDone = ref.isDone;
+		this.day = ref.day;
+	}
+	public void FlipDone()
+	{
+		isDone = !isDone;
+	}
 	@Override
 	public boolean equals(Object obj) {
 	    if (obj == null) {

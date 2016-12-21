@@ -17,6 +17,13 @@ public class TodoManager {
 	{
 		this.AvailableTodos.remove(todo);
 		this.AvailableTodos.add(newTodo);
+		try {
+			SaveAvailableTodos();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("unable to save new Todo List after removing older");
+		}
 	}
 	public void LoadTodoList() throws ClassNotFoundException, IOException
 	{

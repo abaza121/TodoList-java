@@ -27,6 +27,7 @@ class calendarProgram {
 	static int realDay, realMonth, realYear, currentMonth, currentYear;
 	static int firstrow, firstclm; //To return current selected day
 	private static JTextField textField;
+	static Day CurrDay;
 	static JPanel pnlDay;
 	static TodoManager todomanager;
 	static TodolistModel listModel;
@@ -89,7 +90,8 @@ class calendarProgram {
     	list.setModel(listModel);
     	list.setBounds(10, 25, 300, 272);
     	list.setCellRenderer(new CheckboxListCellRenderer<Todo>());
-    	listModel.addElement(new Todo("refe",false,new Day(27,12,2016)));
+    	list.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+    	
     	pnlDay.add(list);
     	
     	textField.setColumns(10);	
@@ -165,7 +167,7 @@ class calendarProgram {
     	cmbYear.addActionListener(new cmbYear_Action());
     	tblCalendar.addMouseListener(new tbl_Action()); //Return current selected day
     	addTask.addActionListener(new AddTaskBtnAction());
-    	list.addMouseListener(null);
+    	list.addMouseListener(new list_Action());
     }
 
 	//Refreshing the calendar//
@@ -216,12 +218,15 @@ class calendarProgram {
     			currentMonth -= 1;
     		}
     		refreshCalendar(currentMonth, currentYear);
+    		tblCalendar.getSelectionModel().clearSelection();
+    		CurrDay = null;
+    		
     	}
     }
 
     static class btnNext_Action implements ActionListener{
     	public void actionPerformed (ActionEvent e){
-    		if (currentMonth == 11){ //Foward one year
+    		if (currentMonth == 11){ //Forward one year
     			currentMonth = 0;
     			currentYear += 1;
     		}
@@ -229,12 +234,22 @@ class calendarProgram {
     			currentMonth += 1;
     		}
     		refreshCalendar(currentMonth, currentYear);
+    		tblCalendar.getSelectionModel().clearSelection();
+    		CurrDay = null;
     	}
     }
     static class AddTaskBtnAction implements ActionListener{
     	public void actionPerformed (ActionEvent e){
-    		listModel.addElement(new Todo("Efecd",false,new Day(27,12,2016)));
-    		 System.out.println("added");
+    		todomanager.AddTodo(new Todo(textField.getText(),false,calendarProgram.CurrDay));
+    		try {
+				todomanager.SaveAvailableTodos();
+				listModel.ChangeList(todomanager.GetForDay(calendarProgram.CurrDay));
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				System.out.println("error happened while saving");
+			}
+    		
     	}
     }
     static class cmbYear_Action implements ActionListener{
@@ -251,12 +266,50 @@ class calendarProgram {
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
-            
             int row = tblCalendar.getSelectedRow();
             int clm = tblCalendar.getSelectedColumn();  
             int day = ((row*7) + (clm-firstclm))+1;
             System.out.println("Day: "+day+" Month: "+(currentMonth+1)+ " Year: "+ currentYear );
+            calendarProgram.CurrDay = new Day(day,currentMonth+1,currentYear);
+            listModel.ChangeList(todomanager.GetForDay(calendarProgram.CurrDay));
         }
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+    	
+    }
+    static class list_Action implements MouseListener {
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+            int index = list.getSelectedIndex(); 
+            Todo oldTodo =  listModel.getElementAt(index);
+            Todo newTodo = new Todo(oldTodo);
+            newTodo.FlipDone();
+            todomanager.EditTodo(oldTodo, newTodo);
+            listModel.ChangeList(todomanager.GetForDay(CurrDay));
+            }
 
 		@Override
 		public void mousePressed(MouseEvent e) {
