@@ -32,6 +32,7 @@ class calendarProgram {
 	static TodoManager todomanager;
 	static TodolistModel listModel;
 	static JList list;
+	static JButton addTask;
 	//Declarations//
 	 
     public static void main (String args[]) {
@@ -78,7 +79,7 @@ class calendarProgram {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	JButton addTask = new JButton("Add Task");
+    	addTask = new JButton("Add Task");
     	addTask.setBounds(230, 305, 80, 30);
     	pnlDay.add(addTask);
     	
@@ -220,7 +221,8 @@ class calendarProgram {
     		refreshCalendar(currentMonth, currentYear);
     		tblCalendar.getSelectionModel().clearSelection();
     		CurrDay = null;
-    		
+    		listModel.ClearList();
+    		addTask.setEnabled(false);
     	}
     }
 
@@ -236,6 +238,8 @@ class calendarProgram {
     		refreshCalendar(currentMonth, currentYear);
     		tblCalendar.getSelectionModel().clearSelection();
     		CurrDay = null;
+    		listModel.ClearList();
+    		addTask.setEnabled(false);
     	}
     }
     static class AddTaskBtnAction implements ActionListener{
@@ -272,6 +276,7 @@ class calendarProgram {
             System.out.println("Day: "+day+" Month: "+(currentMonth+1)+ " Year: "+ currentYear );
             calendarProgram.CurrDay = new Day(day,currentMonth+1,currentYear);
             listModel.ChangeList(todomanager.GetForDay(calendarProgram.CurrDay));
+            addTask.setEnabled(true);
         }
 
 		@Override

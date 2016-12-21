@@ -15,8 +15,7 @@ public class TodoManager {
 	}
 	public void EditTodo(Todo todo, Todo newTodo)
 	{
-		this.AvailableTodos.remove(todo);
-		this.AvailableTodos.add(newTodo);
+		this.AvailableTodos.set((this.AvailableTodos.indexOf(todo)), newTodo);
 		try {
 			SaveAvailableTodos();
 		} catch (IOException e) {
